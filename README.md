@@ -1,1 +1,1 @@
-# Pypro
+# Pyproject
