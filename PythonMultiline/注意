@@ -2,8 +2,12 @@
 通过class MyThread继承threading.Thread的方式，假如在子类MyThread中重写了run方法
 那么对于用MyThread类创建的线程对象，在执行start()会自动执行run函数
 
+另外一种创建线程的方法不通过类来包装线程对象，而是通过函数方法来创建线程
+例如：thread.start_new_thread ( function, args[, kwargs] )
+
 2. 那么问题来了，假如用MyThread创建线程时，还指定了线程函数target=某个函数f
 那么线程start的时候是先执行run函数还是县执行线程函数f
+哈哈，这种情况一般时不会出现的，一般会将函数f作为被调用的函数添加到run函数中
 
 3.一个进程中至少有一个线程，并作为程序的入口，这个线程一般是我们的主线程。程序运行时，我们可以在主线程中启动其他的线程
 一个进程至少有一个主线程，其他为工作线程

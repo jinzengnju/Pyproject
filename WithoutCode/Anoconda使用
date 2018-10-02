@@ -1,0 +1,18 @@
+1. Anoconda建立独立环境
+a.获取文件夹超级权限
+b.新建conda环境
+注意anaconda2/envs文件夹没有权限，如果直接安装，不会撞到usr/local/anaconda2/envs，而是安装到home/wayne/.conda/envs文件夹，所以我们要先获取文件夹的超级权限。
+建立的环境所在位置：/usr/local/anaconda2/envs/tensorflow/ 如果没有超级权限，就会安装到/home/wayne/.conda/envs文件夹
+conda create -n <文件夹，如tensorflow> Python=2.7
+c.激活环境
+source activate <环境名，如tensorflow>
+d.在环境中安装其他包
+conda install --name <环境名，如tensorflow> <包名，numpy>
+
+2. 如何安装不在conda服务器上的包
+使用conda的bin目录下的pip插件
+sudo /usr/local/anaconda2/bin/pip install <例如tqdm>
+
+3. anoconda目录获取超级权限
+因为conda命令不能sudo执行，所以有时候需要获取conda目录超级权限
+sudo chmod 777 -R anaconda2
