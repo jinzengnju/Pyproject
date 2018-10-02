@@ -3,6 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="f79e04e2-2aab-4f9d-9238-2e77ec69dd80" name="Default Changelist" comment="">
 <<<<<<< HEAD
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/.idea/Pypro.iml" afterPath="$PROJECT_DIR$/.idea/Pypro.iml" />
       <change beforePath="$PROJECT_DIR$/.idea/misc.xml" afterPath="$PROJECT_DIR$/.idea/misc.xml" />
       <change beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
@@ -11,6 +12,9 @@
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/PythonMultiline/注意" afterPath="$PROJECT_DIR$/PythonMultiline/注意" />
 >>>>>>> f17bdbb586c5c5dfda5566e6e21d3896d45a3a2b
+=======
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WithoutCode/Git合并" afterPath="$PROJECT_DIR$/WithoutCode/Git合并" />
+>>>>>>> bb3762bfd7d201c1ce43b586f6ef9c28c06d0614
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -125,6 +129,7 @@
   </component>
   <component name="FileEditorManager">
 <<<<<<< HEAD
+<<<<<<< HEAD
     <leaf>
       <file leaf-file-name="PCA.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/DimensionReduction/PCA.py">
@@ -139,6 +144,24 @@
             <state relative-caret-position="240">
               <caret line="8" column="11" lean-forward="true" selection-start-line="8" selection-start-column="11" selection-end-line="8" selection-end-column="11" />
 >>>>>>> f17bdbb586c5c5dfda5566e6e21d3896d45a3a2b
+=======
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="375">
+      <file leaf-file-name="注意" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/PythonMultiline/注意">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="390">
+              <caret line="13" column="0" lean-forward="false" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Git合并" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/WithoutCode/Git合并">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="60">
+              <caret line="2" column="33" lean-forward="false" selection-start-line="2" selection-start-column="33" selection-end-line="2" selection-end-column="33" />
+>>>>>>> bb3762bfd7d201c1ce43b586f6ef9c28c06d0614
               <folding />
             </state>
           </provider>
@@ -200,7 +223,11 @@
         <option value="$PROJECT_DIR$/DimensionReduction/PCA.py" />
 =======
         <option value="$PROJECT_DIR$/WithoutCode/Anoconda使用" />
+<<<<<<< HEAD
 >>>>>>> f17bdbb586c5c5dfda5566e6e21d3896d45a3a2b
+=======
+        <option value="$PROJECT_DIR$/WithoutCode/Git合并" />
+>>>>>>> bb3762bfd7d201c1ce43b586f6ef9c28c06d0614
       </list>
     </option>
   </component>
@@ -914,6 +941,14 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/WithoutCode/Anoconda使用">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="8" column="11" lean-forward="true" selection-start-line="8" selection-start-column="11" selection-end-line="8" selection-end-column="11" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/PythonMultiline/注意">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="390">
@@ -923,6 +958,7 @@
         </state>
       </provider>
     </entry>
+<<<<<<< HEAD
 <<<<<<< HEAD
     <entry file="file://$PROJECT_DIR$/DimensionReduction/PCA.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -934,6 +970,12 @@
         <state relative-caret-position="240">
           <caret line="8" column="11" lean-forward="true" selection-start-line="8" selection-start-column="11" selection-end-line="8" selection-end-column="11" />
 >>>>>>> f17bdbb586c5c5dfda5566e6e21d3896d45a3a2b
+=======
+    <entry file="file://$PROJECT_DIR$/WithoutCode/Git合并">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="2" column="33" lean-forward="false" selection-start-line="2" selection-start-column="33" selection-end-line="2" selection-end-column="33" />
+>>>>>>> bb3762bfd7d201c1ce43b586f6ef9c28c06d0614
           <folding />
         </state>
       </provider>
