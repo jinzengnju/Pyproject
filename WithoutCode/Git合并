@@ -16,7 +16,7 @@ git pull
 3.git status的用法
 如果只是修改了文件，还未add和commit，git status会提示no changes added to commit (use "git add" and/or "git commit -a")
 执行了add后，git status会提示Changes to be committed:要提交的变更：.......
-执行了commit后，会提示工作树为空
+执行了commit后，working tree is clean
 
 4.忽略git中的.idea/workspace.xml文件方法
 在git根目录下新建.gitignore文件，文件中写入.idea/workspace.xml方法即可
@@ -24,7 +24,7 @@ git pull
 
 5.git pull手动解决冲突
 再同步代码的过程中，git首先会自动检查冲突，并尝试进行自动合并。最好的情况是大家同时修改一个文件，但是大家修改的是不同的地方。在这种情况下，git会进行非冲突合并
-这是再调用git pull的时候，git会尝试非冲突合并。
+这是再调用git pull的时候，git会尝试非冲g突合并。
 而在合并有冲突的文件中，git会把修改记录保存在文件中，让开发者自己判断如何选择合并。
 git stash暂存本地修改
 git pull可以拉取线上最新代码
