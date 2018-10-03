@@ -30,6 +30,7 @@ git stash暂存本地修改
 git pull可以拉取线上最新代码
 还原暂存内容：
 git stash pop stash@{0}
+我来学习深度学习
 这时候再打开冲突的文件，有Updated upstream 和=====之间的内容就是pull下来的内容，====和stashed changes之间的内容就是本地修改的内容，手动解决冲突即可
 
 6.对于解决 Git 的 Merge Conflict 你有哪些经验和技巧？
@@ -40,3 +41,5 @@ sudo apt-get install meld;            (install meld)
 When you merge a branch in Git, it may get into conflict state, if you need to go on, you need fix these conflict,but if you need to go back to the state before merge, you can you use
 git reset --hard; (get me back)  If you want to fix the conflicts, use
 git mergetool;
+
+7.我来弹吉他
