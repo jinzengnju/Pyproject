@@ -38,7 +38,5 @@ sudo apt-get install meld;            (install meld)
  git config --global merge.tool meld;  (set Git merge tool default as meld)
  Usage
 When you merge a branch in Git, it may get into conflict state, if you need to go on, you need fix these conflict,but if you need to go back to the state before merge, you can you use
-git reset --hard; (get me back)
-
-If you want to fix the conflicts, use
+git reset --hard; (get me back)  If you want to fix the conflicts, use
 git mergetool;
