@@ -1,3 +1,20 @@
 1.git合并操作
+有关错误：本地文件的忽略
+git如何实现忽略：git设置本地忽略必须保证git的远程仓库分支上没有这个文件，如果远程分支上存在这个文件，本地设置ignore是不起作用的
+如何忽略.idea/workspace.xml：
+一般是在.gitignore文件里加入.idea/workspace.xml
+但是如果在这样做之前已经将此文件提交到了git远程仓库，需要将git远端执行一下：git rm -r --cached ./idea
 
-hebingaaaaaaaaaaaaaaaaaaaaaaaaaaa
+2. git上传时遇到冲突的解决办法
+如果希望保留生产服务器上所作的改动，也就是当前你的本机所作的改动，仅仅并入新配置项目，处理方法如下：
+git stash
+git pull
+git stash pop
+反过来，如果希望代码库种的文件完全覆盖本地的工作版本
+git reset --hard
+git pull
+
+3.git status的用法
+如果只是修改了文件，还未add和commit，git status会提示no changes added to commit (use "git add" and/or "git commit -a")
+执行了add后，git status会提示Changes to be committed:要提交的变更：.......
+执行了commit后，会提示工作树为空
