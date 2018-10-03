@@ -5,8 +5,7 @@ git如何实现忽略：git设置本地忽略必须保证git的远程仓库分�
 一般是在.gitignore文件里加入.idea/workspace.xml
 但是如果在这样做之前已经将此文件提交到了git远程仓库，需要将git远端执行一下：git rm -r --cached ./idea
 
-2. git上传时遇到冲突的解决办法或者是在分支切换的场景
-如果希望保留生产服务器上所作的改动，也就是当前你的本机所作的改动，仅仅并入新配置项目，处理方法如下：
+2. 如果两个人A和B同时在更改一个项目master，A先将更改上传至github，B需要将最新的更改pull下来，这时候会遇到冲突，那么方法是先stash再pull再pop
 git stash
 git pull
 git stash pop
@@ -18,3 +17,6 @@ git pull
 如果只是修改了文件，还未add和commit，git status会提示no changes added to commit (use "git add" and/or "git commit -a")
 执行了add后，git status会提示Changes to be committed:要提交的变更：.......
 执行了commit后，会提示工作树为空
+
+4.忽略git中的.idea/workspace.xml文件方法
+在git根目录下新建.gitignore文件，文件中写入.idea/workspace.xml方法即可
