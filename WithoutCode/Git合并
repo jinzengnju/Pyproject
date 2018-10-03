@@ -20,3 +20,4 @@ git pull
 
 4.忽略git中的.idea/workspace.xml文件方法
 在git根目录下新建.gitignore文件，文件中写入.idea/workspace.xml方法即可
+如果本地的commit仓库中有该文件是不行的，所以需要将本地commit仓库中删除git rm -r --cached .idea
