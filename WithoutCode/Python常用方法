@@ -1,0 +1,16 @@
+1. 获取一个变量A类型type(A)
+
+2.获取变量维度
+Tensorflow中有以下几种方法：
+Tensor.shape
+Tensor.get_shape()
+tf.shape(input,name=None,out_type=tf.int32)
+第一种与第二种均返回一个TensorShape的变量，而第三种返回一个1D的out—type类型的tensor
+第一种与第二种可以在任意位置使用，第三种只能在Session中使用
+那麽如何將TensorShape的变量类型转换为具体维度数值的呢？
+x.shape[i].vale
+x.get_shape()[i].value
+將TensorShape转化为list类型，然后可以直接按照索引取值
+x.get_shape().as_list()
+
+2.对于np数组而言，我们也可以直接a.shape直接得到其形状
