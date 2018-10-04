@@ -1,0 +1,6 @@
+1. np.numpy创建矩阵的大小是有限的，无法创建上万行或者列的矩阵,比如创建a=np.ones((70000,130000))会直接报错MemoryError。
+如何解决：
+scipy包中提供了稀疏矩阵的创建，scipy.sparse方法创建稀疏矩阵。将之前的rating=np.array((n,n))，其中n超级大
+现在转化为rating=scipy.sparse.coo_matrix((m,n))
+
+2. 

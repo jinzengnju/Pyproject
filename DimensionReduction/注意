@@ -1,0 +1,15 @@
+sklearn传统PCA不支持spase matrix的输入（tfidf模型transform后的数据是sparse matrix），如果要使用传统PCA，需要根据sparse_matrix创建array数组
+
+fit_transform(X)
+用X来训练PCA模型，同时返回降维后的数据。
+newX=pca.fit_transform(X)，newX就是降维后的数据。
+
+fit(X)方法只是会返回该PCA模型，但不会返回降维后的数据
+
+transform(X)，这是在已有模型的基础上（调用了fit()或者fit_transform()之后生成的模型），transform新的数据
+将数据X转换成降维后的数据。当模型训练好后，对于新输入的数据，都可以用transform方法来降维。
+
+2.使用TruncatedSVD的一些注意点：推荐在LDA文档处理时对原始的词频TF进行tf-idf转换。特别的，次线性归一化sublinear scaling和IDF可以通过
+TFIDFTransformer的参数sublinear_tf=True, use_idf=True进行设置，使得feature的值更接近高斯分布，从而补偿对文本数据进行LSA的误差
+https://blog.csdn.net/mmc2015/article/details/46867773
+
