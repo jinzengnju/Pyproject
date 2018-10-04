@@ -14,3 +14,28 @@ x.get_shape()[i].value
 x.get_shape().as_list()
 
 2.对于np数组而言，我们也可以直接a.shape直接得到其形状
+
+3.Python的数据标准化
+preprocessing模块，利用这个模块中的scale、StandardScaler和MinMaxScaler
+
+from sklearn import preprocessing
+X_2 = preprocessing.scale(X) #缩放波斯顿特征数据，将标准差都变为1.
+my_scaler = preprocessing.StandardScaler() #与以上相同
+my_scaler.fit(X)
+my_scaler.transform(X)
+#也可以缩放范围
+my_minmax_scaler = preprocessing.MinMaxScaler() #缩放范围，默认为［0，1］
+my_minmax_scaler.fit(x)
+my_minmax_scaler.transform(x)
+my_odd_scaler = preprocessing.MinMaxScaler(feature_range = (-5,5)) #缩放范围改为［－5，5］
+
+4.多分类將标签one-hot化
+sklearn里有OneHotEncoder、DictVectorizer和patsy用来处理分类变量
+
+from sklearn import preprocessing
+text_encoder = preprocessing.OneHotEncoder()
+text_encoder.fit_transform(iris.target).toarray()
+from sklearn.feature_extraction import DictVectorizer
+dv = DictVectorzier()
+my_dict = [{'species':iris.target_names[i]} for i in y]
+dv.fit_transform(my_dict).toarray()

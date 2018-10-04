@@ -3,4 +3,26 @@
 scipy包中提供了稀疏矩阵的创建，scipy.sparse方法创建稀疏矩阵。将之前的rating=np.array((n,n))，其中n超级大
 现在转化为rating=scipy.sparse.coo_matrix((m,n))
 
-2. 
+2. Python解决内存爆炸的问题
+法一：
+pandas的read_csv()可以分块读入数据
+f = open(path)
+data = pd.read_csv(path, sep=',',engine = 'python',iterator=True)
+loop = True
+chunkSize = 1000
+chunks = []
+index=0
+while loop:
+    try:
+        print(index)
+        chunk = data.get_chunk(chunkSize)
+        chunks.append(chunk)
+        index+=1
+
+    except StopIteration:
+        loop = False
+        print("Iteration is stopped.")
+print('开始合并')
+data = pd.concat(chunks, ignore_index= True)
+chunkSize，这是指定每个块包含的行数。
+
