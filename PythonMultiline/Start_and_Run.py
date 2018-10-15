@@ -10,7 +10,7 @@ class myThread(threading.Thread):
         print("running in",currentThreadname)
 thread=myThread(1,"mythrd",1)
 #thread.run()
-#thread.start()
+thread.start()
 # 结果如下所示：
 # running in <_MainThread(MainThread, started 1960)>
 # running in <myThread(mythrd, started 7488)>

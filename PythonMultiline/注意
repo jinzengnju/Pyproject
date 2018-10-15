@@ -22,3 +22,10 @@
 4.start和run方法的区别
 start()启动一个子线程，线程名即为定义的name
 run()方法并不是启动一个新线程，就是在主线程中调用了一个普通函数
+thread=myThread(1,"mythrd",1)
+thread.run()
+thread.start()
+thread继承了threading.Thread类，并且重写了run方法
+第一句thread=myThread(1,"mythrd",1)创建线程并不会自动去调用run方法
+第二句thread.run()只是一个函数调用，在主线程中调用了run方法，并没有启动新线程
+第三局thread.start()启动了创建的线程，线程start()后会自动调用run方法
