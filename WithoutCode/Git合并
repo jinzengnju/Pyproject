@@ -3,9 +3,10 @@
 git如何实现忽略：git设置本地忽略必须保证git的远程仓库分支上没有这个文件，如果远程分支上存在这个文件，本地设置ignore是不起作用的
 如何忽略.idea/workspace.xml：
 一般是在.gitignore文件里加入.idea/workspace.xml
-但是如果在这样做之前已经将此文件提交到了git远程仓库，需要将git远端执行一下：git rm -r --cached ./idea
+但是如果在这样做之前已经将此文件提交到了git远程仓库(但还没push到远程)，需要将git远端执行一下：git rm -r --cached ./idea
 
-2. 如果两个人A和B同时在更改一个项目master，A先将更改上传至github，B需要将最新的更改pull下来，这时候会遇到冲突，那么方法是先stash再pull再pop
+2. 如果两个人A和B同时在更改一个项目master，A先将更改上传至github，B需要将最新的更改pull下来，这时候会遇到冲突，那么方法
+是先stash再pull再pop
 git stash
 git pull
 git stash pop
