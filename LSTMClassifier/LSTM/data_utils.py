@@ -15,22 +15,22 @@ def init():
 	line = f.readline()
 	while line:
 		lawname[len(law)] = line.strip()
+        #lawname的键是law文件行号索引，对应值是law的名称即第几条
 		law[line.strip()] = len(law)
+        #law的键是第几条，值是对应的类标记
 		line = f.readline()
 	f.close()
-
-
 	f = open('accu.txt', 'r', encoding = 'utf8')
 	accu = {}
 	accuname = {}
 	line = f.readline()
 	while line:
 		accuname[len(accu)] = line.strip()
+        #accuname的键是accu文件的行号索引（也即类标记），对应的值是案由名称
 		accu[line.strip()] = len(accu)
+        #accu对应的键是俺有名称，对应的值是类标记种类
 		line = f.readline()
 	f.close()
-
-
 	return law, accu, lawname, accuname
 
 law, accu, lawname, accuname = init()
@@ -39,12 +39,10 @@ law, accu, lawname, accuname = init()
 def getClassNum(kind):
     global law
     global accu
-
     if kind == 'law':
         return len(law)
     if kind == 'accu':
         return len(accu)
-
 
 def getName(index, kind):
     global lawname
@@ -94,8 +92,6 @@ def getlabel(d, kind):
     if kind == 'time':
         return gettime(d['meta']['term_of_imprisonment'])
 
-
-
 _PAD="_PAD"
 _GO="_GO"
 _EOS="EOS"
@@ -105,7 +101,6 @@ PAD_ID=0
 GO_ID=1
 EOS_ID=2
 UNK_ID=3
-#accu:左边是案由代码，右边是第几个案由
 
 def cut_text(alltext):
     count = 0
@@ -115,7 +110,6 @@ def cut_text(alltext):
         if count % 2000 == 0:
             print(count)
         train_text.append([word for word in jieba.cut(text) if len(word)>1])
-
     return train_text
 
 def create_vacabulary(X,max_vocabulay_size=10000):
@@ -126,21 +120,15 @@ def create_vacabulary(X,max_vocabulay_size=10000):
                 vocab[word]+=1
             else:
                 vocab[word]=1
-
-
-    vocab_list=_START_VOCAB+sorted(vocab,key=vocab.get,reverse=True)
-
+    vocab_list=_START_VOCAB+sorted(vocab,key=vocab.get(),reverse=True)
     vocab_list=vocab_list[:max_vocabulay_size]
-
+    #这里的vocab_list只会保存max_vocabulay_size个词
 
     vocab_dict=dict((x,y) for (y,x) in enumerate(vocab_list))
-    #key is word,value is index
+    #key is word,value is index即是第几个词
     rev_vocab_dict={v:k for k,v in vocab_dict.items()}
     # key is index,value is word
-
     return vocab_list,vocab_dict,rev_vocab_dict
-
-
 
 def get_batch_example():
     filename=['data_train.tfrecords']
@@ -157,8 +145,6 @@ def get_batch_example():
 
         }
     )
-
-
     # text=features['fact']
     # accu_label=getlabel(d,'accu')
     # law_label=getlabel(d,'law')
@@ -170,11 +156,6 @@ def get_batch_example():
     # alltext_batch,accu_label_batch,law_label_batch,time_label_batch=\
     #     tf.train.shuffle_batch([alltext,accu_label,law_label,time_label],batch_size=batch_size,capacity=capacity,min_after_dequeue=min_after_dequeue)
     # return alltext_batch,accu_label_batch,law_label_batch,time_label_batch
-
-
-
-
-
 
 def sentence_to_token_ids(sentence,vocab_dict):
     return [vocab_dict.get(word,UNK_ID) for word in sentence]

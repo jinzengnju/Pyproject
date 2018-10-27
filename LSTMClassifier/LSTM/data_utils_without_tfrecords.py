@@ -1,12 +1,3 @@
-import os
-import json
-# dict={"天才":1,"南京":2,"大学":3}
-#
-# f_write=open("vocab.dict",'w')
-# json.dump(dict,f_write,ensure_ascii=False)
-f_read=open("vocab.dict",'r')
-dict=json.load(f_read)
-print(dict)
 #!/usr/bin/python
 # -*- coding:UTF-8 -*-
 import numpy as np
@@ -220,4 +211,3 @@ def generate_batch(X,y,seq_lens,batch_size):
         start_index=batch_num*batch_size
         end_index=min((batch_num+1)*batch_size,data_size)
         yield X[start_index:end_index],y[start_index:end_index],seq_lens[start_index:end_index]
-

@@ -15,7 +15,7 @@ loss=tf.reduce_mean(tf.square(y-y_predict))
 optimizer=tf.train.GradientDescentOptimizer(0.5)
 train=optimizer.minimize(loss)
 
-isTrain=False
+isTrain=True
 train_steps=100
 checkpoint_steps=50
 checkpoint_dir=''
