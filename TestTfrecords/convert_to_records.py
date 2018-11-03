@@ -80,6 +80,7 @@ def convert_to(input_filename,output_filename):
         print(type(d['meta']['accusation']));
         fact=d['fact']
         accusation=[tf.compat.as_bytes(e) for e in d['meta']['accusation']]
+        #将数据转为bytes字节形式保存，因为上面是_bytes_feature
         law=d['meta']['relevant_articles']
         time=getlabel(d,'time')
         example=tf.train.Example(features=tf.train.Features(feature={
@@ -89,6 +90,7 @@ def convert_to(input_filename,output_filename):
             #     int64_list=tf.train.Int64List(value=d['meta']['relevant_articles'])),
             # 'time':_int64_feature(getlabel(d,'time'))
             'fact': _bytes_feature(tf.compat.as_bytes(fact)),
+            #先将fact转为字节bytes object存储，因为上面是bytes fature
             'accusation': _bytes_feature(accusation),
             'law': _int64_feature(law),
             'time': _int64_feature(time)

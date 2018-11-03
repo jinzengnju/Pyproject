@@ -1,13 +1,7 @@
 #!/usr/bin/python
 # -*- coding:UTF-8 -*-
 import numpy as np
-import re
-import jieba
 import json
-import itertools
-from collections import Counter
-import tensorflow as tf
-
 def init():
 	f = open('law.txt', 'r', encoding = 'utf8')
 	law = {}
@@ -52,12 +46,9 @@ def getName(index, kind):
 
     if kind == 'accu':
         return accuname[index]
-
-
 def gettime(time):
     # 将刑期用分类模型来做
     v = int(time['imprisonment'])
-
     if time['death_penalty']:
         return 0
     if time['life_imprisonment']:
@@ -77,21 +68,18 @@ def gettime(time):
     else:
         return 8
 
-
 def getlabel(d, kind):
     global law
     global accu
-
     # 做单标签
     if kind == 'law':
         # 返回多个类的第一个
-        return law[str(d['meta']['relevant_articles'][0])]
+        return law[str(d['meta']['relevant_articles'])]
     if kind == 'accu':
         return accu[d['meta']['accusation'][0]]
 
     if kind == 'time':
         return gettime(d['meta']['term_of_imprisonment'])
-
 _PAD="_PAD"
 _GO="_GO"
 _EOS="EOS"
@@ -101,16 +89,6 @@ PAD_ID=0
 GO_ID=1
 EOS_ID=2
 UNK_ID=3
-
-def cut_text(alltext):
-    count = 0
-    train_text = []
-    for text in alltext:
-        count += 1
-        if count % 2000 == 0:
-            print(count)
-        train_text.append([word for word in jieba.cut(text) if len(word)>1])
-    return train_text
 
 def create_vacabulary(X,max_vocabulay_size=10000):
     vocab={}
@@ -123,43 +101,17 @@ def create_vacabulary(X,max_vocabulay_size=10000):
     vocab_list=_START_VOCAB+sorted(vocab,key=vocab.get(),reverse=True)
     vocab_list=vocab_list[:max_vocabulay_size]
     #这里的vocab_list只会保存max_vocabulay_size个词
-
     vocab_dict=dict((x,y) for (y,x) in enumerate(vocab_list))
     #key is word,value is index即是第几个词
     rev_vocab_dict={v:k for k,v in vocab_dict.items()}
     # key is index,value is word
     return vocab_list,vocab_dict,rev_vocab_dict
 
-def get_batch_example():
-    filename=['data_train.tfrecords']
-    filename_queue=tf.train.string_input_producer(filename,shuffle=False)
-    reader=tf.TFRecordReader()
-    _,serilized_example=reader.read(filename_queue)
-    features = tf.parse_single_example(
-        serilized_example,
-        features={
-            'fact': tf.FixedLenFeature([], tf.string),
-            'accusation': tf.FixedLenFeature([], tf.string),
-            'law': tf.FixedLenFeature([], tf.int64),
-            'time': tf.FixedLenFeature([], tf.int64)
-
-        }
-    )
-    # text=features['fact']
-    # accu_label=getlabel(d,'accu')
-    # law_label=getlabel(d,'law')
-    # time_label=getlabel(d,'time')
-    #
-    # min_after_dequeue = 10000
-    # batch_size = 100
-    # capacity = min_after_dequeue + 3 * batch_size
-    # alltext_batch,accu_label_batch,law_label_batch,time_label_batch=\
-    #     tf.train.shuffle_batch([alltext,accu_label,law_label,time_label],batch_size=batch_size,capacity=capacity,min_after_dequeue=min_after_dequeue)
-    # return alltext_batch,accu_label_batch,law_label_batch,time_label_batch
 
 def sentence_to_token_ids(sentence,vocab_dict):
     return [vocab_dict.get(word,UNK_ID) for word in sentence]
 
+#这里传入的X是分词后的结果
 def data_to_token_ids(X,vocab_dict):
     max_len=max(len(sentence) for sentence in X)
     seq_lens=[]
@@ -168,65 +120,19 @@ def data_to_token_ids(X,vocab_dict):
         token_ids=sentence_to_token_ids(line,vocab_dict)
         #Padding
         data_as_tokens.append(token_ids+[PAD_ID]*(max_len-len(token_ids)))
-
         seq_lens.append(len(token_ids))
     return data_as_tokens,seq_lens
 
 
-
-def read_train_or_valid_Data(path):
-    fin = open(path, 'r', encoding='utf8')
-
-    alltext = []
-
-    accu_label = []
-    law_label = []
-    time_label = []
-
-    line = fin.readline()
-    while line:
-        d = json.loads(line)
-        alltext.append(d['fact'])
-
-        accu_label.append(getlabel(d, 'accu'))
-        law_label.append(getlabel(d, 'law'))
-        time_label.append(getlabel(d, 'time'))
-        line = fin.readline()
-    fin.close()
-    alltext=cut_text(alltext)
-    return alltext, accu_label, law_label, time_label
-
-
-
 def train_and_valid_data(alltext,vocab_dict,y,num):
     alltext,seq_lens=data_to_token_ids(alltext,vocab_dict)
-
     alltext=np.array(alltext)
     seq_lens=np.array(seq_lens)
     data_size=len(alltext)
-
-
     one_hot_index=np.arange(len(y))*num+y
     y_one_hot=np.zeros((len(y),num))
     y_one_hot.flat[one_hot_index]=1
-
-
     shuffle_indices=np.random.permutation(np.arange(data_size))
-
-
     alltext,y,seq_lens=alltext[shuffle_indices],y_one_hot[shuffle_indices],seq_lens[shuffle_indices]
-
     return alltext,y,seq_lens
-
-def generate_epoch(X,y,seq_lens,num_epochs,batch_size):
-    for epoch_num in range(num_epochs):
-        yield generate_batch(X,y,seq_lens,batch_size)
-
-def generate_batch(X,y,seq_lens,batch_size):
-    data_size=len(X)
-    num_batches=(data_size//batch_size)
-    for batch_num in range(num_batches):
-        start_index=batch_num*batch_size
-        end_index=min((batch_num+1)*batch_size,data_size)
-        yield X[start_index:end_index],y[start_index:end_index],seq_lens[start_index:end_index]
 

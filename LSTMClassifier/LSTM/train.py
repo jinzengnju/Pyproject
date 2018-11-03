@@ -5,15 +5,10 @@ import sys
 import tensorflow as tf
 import numpy as np
 import json
-from LSTMClassify.data_utils import(
-    generate_epoch,
-    train_and_valid_data,
-    create_vacabulary,
-    read_train_or_valid_Data,
-    getClassNum
-
-)
-from LSTMClassify.model import (Model,)
+from LSTMClassifier.LSTM.read_data import *
+import time
+from LSTMClassifier.LSTM.model import Model
+from LSTMClassifier.LSTM.data_utils import *
 
 #Configs
 tf.app.flags.DEFINE_string("rnn_unit",'lstm',"Type of RNN unit:rnn|gru|lstm.")
@@ -48,8 +43,6 @@ def train(train_path,valid_path,what):
     print(FLAGS.num_classes)
     accu_num = getClassNum("accu")
     law_num = getClassNum("law")
-
-
     f_read1=open('vocab.dict','r')
     vocab_dict=json.load(f_read1)
     f_read1.close()
@@ -60,82 +53,80 @@ def train(train_path,valid_path,what):
     # print(json.dumps(rev_vocab_dict,ensure_ascii=False))
     # print(type(vocab_dict["被告"]))
     # print(rev_vocab_dict)
-
-
-
-    # train_alltext, train_accu_label, train_law_label, train_time_label=read_train_or_valid_Data(train_path)
-    #
-    # valid_alltext, valid_accu_label, valid_law_label, valid_time_label= read_train_or_valid_Data(valid_path)
-
-
-
     # f_write1=open('vocab.dict','w')
     # json.dump(vocab_dict,f_write1,ensure_ascii=False)
     # f_write1.close()
-    #
     # f_write2=open("rev_vocab.dict",'w')
     # json.dump(rev_vocab_dict,f_write2,ensure_ascii=False)
     # f_write2.close()
-
-
-
-    # if(what=="accu"):
-    #     train_X,train_y,train_seq_lens=train_and_valid_data(train_alltext,vocab_dict,train_accu_label,accu_num)
-    #     valid_X, valid_y, valid_seq_lens = train_and_valid_data(valid_alltext, vocab_dict, valid_accu_label,accu_num)
-    # if(what=="law"):
-    #     train_X, train_y, train_seq_lens = train_and_valid_data(train_alltext, vocab_dict, train_law_label,law_num)
-    #     valid_X, valid_y, valid_seq_lens = train_and_valid_data(valid_alltext, vocab_dict, valid_law_label,law_num)
-    # if (what == "time"):
-    #     train_X, train_y, train_seq_lens = train_and_valid_data(train_alltext, vocab_dict, train_time_label)
-    #     valid_X, valid_y, valid_seq_lens = train_and_valid_data(valid_alltext, vocab_dict, valid_time_label)
 
     with tf.Session() as sess:
         model =create_model(sess,FLAGS)
         coord=tf.train.Coordinator()
         threads=tf.train.start_queue_runners(coord=coord)
+        with tf.device('/cpu:0'):
+            fact_batch_words,batch_laws=inputs(FLAGS.data_dir,FLAGS.batch_size,vocab_dict)
+        try:
+            step=0
+            while not coord.should_stop():
+                start_time=time.time()
+                _, loss, accuracy = model.step(sess, fact_batch_words, batch_laws, dropout=FLAGS.dropout,
+                                               forward_only=False,
+                                               sampling=False)
+            time_use=time.time()-start_time
+            if step%100==0:
+                print('Step %d:loss=%.2f(%.3sec)'%(step,loss,time_use))
+            step+=1
+        except tf.errors.OutOfRangeError:
+            print('Done training for %d epoches,%d steps'%(FLAGS.num_epoches,step))
+        finally:
+            coord.request_stop()
+        coord.join(threads)
+        sess.close()
+
 
         #Train results
         #一般用for循环来遍历一个生成器,generate_epoch这个生成器会把一个epoch的数据切成batch并放在生成器中
-        for epoch_num,epoch in enumerate(generate_epoch(train_X,train_y,train_seq_lens,FLAGS.num_epochs,FLAGS.batch_size)):
-            print("Epoch:",epoch_num)
-            sess.run(tf.assign(model.lr,FLAGS.learning_rate*(FLAGS.learning_rate_decay_factor**epoch_num)))
-
-            train_loss=[]
-            train_accuracy=[]
-
-            for batch_num,(batch_X,batch_y,batch_seq_lens) in enumerate(epoch):
-                print("batch_num:%d"%batch_num)
-                _,loss,accuracy=model.step(sess,batch_X,batch_seq_lens,batch_y,dropout=FLAGS.dropout,forward_only=False,
-                                           sampling=False)
-
-                train_loss.append(loss)
-                train_accuracy.append(accuracy)
-
-            print
-            print("EPOCH %i SUMMARY"%epoch_num)
-            print("Training loss %.3f"%np.mean(train_loss))
-            print("Training accuracy %.3f"%np.mean(train_accuracy))
-            print("-------------------------")
-            #Valid results
-            for valid_epoch_num,valid_epoch in enumerate(generate_epoch(valid_X,valid_y,valid_seq_lens,num_epochs=1,batch_size=FLAGS.batch_size)):
-                valid_loss=[]
-                valid_accuracy=[]
-
-                for valid_batch_num,(valid_batch_X,valid_batch_y,valid_batch_seq_lens) in enumerate(valid_epoch):
-                    loss,accuracy=model.step(sess,valid_batch_X,valid_batch_seq_lens,valid_batch_y,dropout=0.0,forward_only=True,sampling=False)
-                    valid_loss.append(loss)
-                    valid_accuracy.append(accuracy)
-
-            print("validation loss %.3f"%np.mean(valid_loss))
-            print("Valid accuracy %.3f"%np.mean(valid_accuracy))
-            print("------------------------------------------")
-
-            #Save cheackpoint every epoch
-            if not os.path.isdir(FLAGS.ckpt_dir):
-                os.makedirs(FLAGS.ckpt_dir)
-            checkpoint_path=os.path.join(FLAGS.ckpt_dir,"model.ckpt")
-            print("Saving the model")
-            model.saver.save(sess,checkpoint_path,global_step=model.global_step)
+        # for epoch_num,epoch in enumerate(generate_epoch(train_X,train_y,train_seq_lens,FLAGS.num_epochs,FLAGS.batch_size)):
+        #     print("Epoch:",epoch_num)
+        #     sess.run(tf.assign(model.lr,FLAGS.learning_rate*(FLAGS.learning_rate_decay_factor**epoch_num)))
+        #
+        #     train_loss=[]
+        #     train_accuracy=[]
+        #
+        #     for batch_num,(batch_X,batch_y,batch_seq_lens) in enumerate(epoch):
+        #         print("batch_num:%d"%batch_num)
+        #         _,loss,accuracy=model.step(sess,batch_X,batch_seq_lens,batch_y,dropout=FLAGS.dropout,forward_only=False,
+        #                                    sampling=False)
+        #
+        #         train_loss.append(loss)
+        #         train_accuracy.append(accuracy)
+        #
+        #     print
+        #     print("EPOCH %i SUMMARY"%epoch_num)
+        #     print("Training loss %.3f"%np.mean(train_loss))
+        #     print("Training accuracy %.3f"%np.mean(train_accuracy))
+        #     print("-------------------------")
+        #     #Valid results
+        #     for valid_epoch_num,valid_epoch in enumerate(generate_epoch(valid_X,valid_y,valid_seq_lens,num_epochs=1,batch_size=FLAGS.batch_size)):
+        #         valid_loss=[]
+        #         valid_accuracy=[]
+        #
+        #         for valid_batch_num,(valid_batch_X,valid_batch_y,valid_batch_seq_lens) in enumerate(valid_epoch):
+        #             loss,accuracy=model.step(sess,valid_batch_X,valid_batch_seq_lens,valid_batch_y,dropout=0.0,forward_only=True,sampling=False)
+        #             valid_loss.append(loss)
+        #             valid_accuracy.append(accuracy)
+        #
+        #     print("validation loss %.3f"%np.mean(valid_loss))
+        #     print("Valid accuracy %.3f"%np.mean(valid_accuracy))
+        #     print("------------------------------------------")
+        #
+        #     #Save cheackpoint every epoch
+        #     if not os.path.isdir(FLAGS.ckpt_dir):
+        #         os.makedirs(FLAGS.ckpt_dir)
+        #     checkpoint_path=os.path.join(FLAGS.ckpt_dir,"model.ckpt")
+        #     print("Saving the model")
+        #     model.saver.save(sess,checkpoint_path,global_step=model.global_step)
 
 # def sample():
 #     X,y=load_data_and_labels()
