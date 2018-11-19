@@ -65,7 +65,8 @@ class Model(object):
             correct_prediction=tf.equal(tf.argmax(targets_y,1),tf.argmax(logits,1))
             accuracy=tf.reduce_mean(tf.cast(correct_prediction,tf.float32))
             return accuracy
-        self.accuracy=get_accuracy(self.targets_y,logits)
+        #self.accuracy=get_accuracy(self.targets_y,logits)
+        self.predict=tf.nn.top_k(logits,5)[1]
         self.loss=tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=logits,labels=self.targets_y))
         self.lr=tf.Variable(0.0,trainable=False)
         trainable_vars=tf.trainable_variables()
@@ -80,9 +81,9 @@ class Model(object):
                     self.seq_lens:batch_seq_lens,
                     self.dropout:dropout}
         if forward_only:
-            output_feed=[self.loss,self.accuracy]
+            output_feed=[self.loss,self.predict]
         else:
-            output_feed=[self.train_optimizer,self.loss,self.accuracy]
+            output_feed=[self.train_optimizer,self.loss,self.predict]
         outputs=sess.run(output_feed,input_feed)
         if forward_only:
             return outputs[0],outputs[1]

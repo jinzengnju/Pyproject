@@ -90,9 +90,6 @@ def train(vocab_dict,law_num):
         coord.join(threads)
         sess.close()
 
-
-
-
 def preProcess():
     law_num = getClassNum("law")
     f_read1=open('/home/jin/Pypro/Pyproject/LSTMClassifier/data/vocab.dict','r')

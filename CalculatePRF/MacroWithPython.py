@@ -6,14 +6,6 @@ import json
 class Judger:
     # Initialize Judger, with the path of accusation list and law articles list
     def __init__(self, accusation_path, law_path):
-        self.accu_dic = {}
-
-        f = open(accusation_path, "r")
-        self.task1_cnt = 0
-        for line in f:
-            self.task1_cnt += 1
-            self.accu_dic[line[:-1]] = self.task1_cnt
-
         self.law_dic = {}
         f = open(law_path, "r")
         self.task2_cnt = 0
@@ -43,26 +35,6 @@ class Judger:
     # Gen new results according to the truth and users output
     #这个是可以处理多标签的问题
     def gen_new_result(self, result, truth, label):
-        #针对一个测试数据，而不是针对的整个集合。因为整个函数对每一个训练样本都会遍历一遍，如下面的test函数
-        s1 = set(label["accusation"])
-        s2 = set()
-        for name in truth["accusation"]:
-            s2.add(self.accu_dic[name.replace("[", "").replace("]", "")])
-
-        for a in range(0, self.task1_cnt):
-            in1 = (a + 1) in s1#预测的标签集合，s1针对一个样本而言
-            in2 = (a + 1) in s2#正确的标签集合，s2针对一个样本而言
-            if in1:
-                if in2:
-                    result[0][a]["TP"] += 1
-                else:
-                    result[0][a]["FP"] += 1
-            else:
-                if in2:
-                    result[0][a]["FN"] += 1
-                else:
-                    result[0][a]["TN"] += 1
-
         s1 = set(label["articles"])
         s2 = set()
         for name in truth["relevant_articles"]:
@@ -118,8 +90,7 @@ class Judger:
     # Generatue all scores
     def get_score(self, result):
         s1 = self.gen_score(result[0])
-        s2 = self.gen_score(result[1])
-        return [s1, s2]
+        return [s1]
 
     # Test with ground truth path and the user's output path
     def test(self, truth_path, output_path):
