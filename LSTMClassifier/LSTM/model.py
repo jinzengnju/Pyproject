@@ -32,11 +32,7 @@ def rnn_softmax(FLAGS,outputs):
     logits=tf.matmul(outputs,W_softmax)+b_softmax
     return logits
 
-def length(data):
-    relevant=tf.sign(tf.abs(data))
-    length=tf.reduce_sum(relevant,reduction_indices=1)
-    length=tf.cast(length,tf.int32)
-    return length
+
 
 class Model(object):
     def __init__(self,FLAGS):
@@ -44,6 +40,7 @@ class Model(object):
         self.targets_y=tf.placeholder(tf.float32,shape=[None,None],name='targets_y')
         self.seq_lens=tf.placeholder(tf.int32,shape=[None,],name='seq_lens')
         self.dropout=tf.placeholder(tf.float32)
+        self.global_step = tf.Variable(0, trainable=False)
 
         stacked_cell=rnn_cell(FLAGS,self.dropout)
 
@@ -54,50 +51,40 @@ class Model(object):
         all_outputs,state=tf.nn.dynamic_rnn(cell=stacked_cell,inputs=inputs,sequence_length=self.seq_lens,dtype=tf.float32)
         outputs=state[-1][1]
 
+
         with tf.variable_scope('rnn_softmax'):
+            print(FLAGS.num_classes)
             W_softmax=tf.get_variable("W_softmax",[FLAGS.num_hidden_units,FLAGS.num_classes])
             b_softmax=tf.get_variable("b_softmax",[FLAGS.num_classes])
 
+        #outputs，使用最后一层的h_state作为向量进行softmax然后文本分类
         logits=rnn_softmax(FLAGS,outputs)
         probabilities=tf.nn.softmax(logits)
-        self.accuracy=tf.equal(tf.argmax(self.targets_y,1),tf.argmax(logits,1))
 
+        def get_accuracy(logits,targets_y):
+            correct_prediction=tf.equal(tf.argmax(targets_y,1),tf.argmax(logits,1))
+            accuracy=tf.reduce_mean(tf.cast(correct_prediction,tf.float32))
+            return accuracy
+        self.accuracy=get_accuracy(self.targets_y,logits)
         self.loss=tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=logits,labels=self.targets_y))
-
         self.lr=tf.Variable(0.0,trainable=False)
         trainable_vars=tf.trainable_variables()
         grads,_=tf.clip_by_global_norm(tf.gradients(self.loss,trainable_vars),FLAGS.max_gradient_norm)
         optimizer=tf.train.AdamOptimizer(self.lr)
-        self.train_optimizer=optimizer.apply_gradients(zip(grads,trainable_vars))
+        self.train_optimizer=optimizer.apply_gradients(zip(grads,trainable_vars),global_step=self.global_step)
+        self.saver=tf.train.Saver(tf.all_variables(),max_to_keep=3)
 
-        sampling_outputs=all_outputs[0]
-
-        sampling_logits=rnn_softmax(FLAGS,sampling_outputs)
-        self.sampling_probablities=tf.nn.softmax(sampling_logits)
-
-        self.global_step=tf.Variable(0,trainable=False)
-        self.saver=tf.train.Saver(tf.all_variables())
-
-    def step(self,sess,batch_X,batch_seq_lens,batch_y=None,dropout=0.0,forward_only=True,sampling=False):
+    def step(self,sess,batch_X,batch_seq_lens,batch_y=None,dropout=0.0,forward_only=True):
         input_feed={self.inputs_X:batch_X,
                     self.targets_y:batch_y,
                     self.seq_lens:batch_seq_lens,
                     self.dropout:dropout}
         if forward_only:
-            if not sampling:
-                output_feed=[self.loss,self.accuracy]
-            elif sampling:
-                input_feed={self.inputs_X:batch_X,
-                    self.seq_lens:batch_seq_lens,
-                    self.dropout:dropout}
-                output_feed=[self.sampling_probablities]
+            output_feed=[self.loss,self.accuracy]
         else:
             output_feed=[self.train_optimizer,self.loss,self.accuracy]
         outputs=sess.run(output_feed,input_feed)
         if forward_only:
-            if not sampling:
-                return outputs[0],outputs[1]
-            elif sampling:
-                return outputs[0]
+            return outputs[0],outputs[1]
         else:
             return outputs[0],outputs[1],outputs[2]

@@ -2,8 +2,9 @@
 # -*- coding:UTF-8 -*-
 import numpy as np
 import json
+import jieba
 def init():
-	f = open('law.txt', 'r', encoding = 'utf8')
+	f = open('/home/jin/data/cail_0518/law.txt', 'r', encoding = 'utf8')
 	law = {}
 	lawname = {}
 	line = f.readline()
@@ -14,7 +15,7 @@ def init():
         #law的键是第几条，值是对应的类标记
 		line = f.readline()
 	f.close()
-	f = open('accu.txt', 'r', encoding = 'utf8')
+	f = open('/home/jin/data/cail_0518/accu.txt', 'r', encoding = 'utf8')
 	accu = {}
 	accuname = {}
 	line = f.readline()
@@ -108,6 +109,17 @@ def create_vacabulary(X,max_vocabulay_size=10000):
     return vocab_list,vocab_dict,rev_vocab_dict
 
 
+def cut_text(alltext):
+    count = 0
+    train_text = []
+    for text in alltext:
+        count += 1
+        if count % 2000 == 0:
+            print(count)
+        train_text.append([word for word in jieba.cut(text) if len(word)>1])
+    return train_text
+
+
 def sentence_to_token_ids(sentence,vocab_dict):
     return [vocab_dict.get(word,UNK_ID) for word in sentence]
 
@@ -123,16 +135,10 @@ def data_to_token_ids(X,vocab_dict):
         seq_lens.append(len(token_ids))
     return data_as_tokens,seq_lens
 
-
-def train_and_valid_data(alltext,vocab_dict,y,num):
-    alltext,seq_lens=data_to_token_ids(alltext,vocab_dict)
+def get_X_with_word_index(allfact,vocab_dict):
+    temp=cut_text(allfact)
+    alltext,seq_lens=data_to_token_ids(temp,vocab_dict)
     alltext=np.array(alltext)
     seq_lens=np.array(seq_lens)
-    data_size=len(alltext)
-    one_hot_index=np.arange(len(y))*num+y
-    y_one_hot=np.zeros((len(y),num))
-    y_one_hot.flat[one_hot_index]=1
-    shuffle_indices=np.random.permutation(np.arange(data_size))
-    alltext,y,seq_lens=alltext[shuffle_indices],y_one_hot[shuffle_indices],seq_lens[shuffle_indices]
-    return alltext,y,seq_lens
+    return alltext,seq_lens
 
