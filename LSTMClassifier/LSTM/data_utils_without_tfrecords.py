@@ -211,3 +211,4 @@ def generate_batch(X,y,seq_lens,batch_size):
         start_index=batch_num*batch_size
         end_index=min((batch_num+1)*batch_size,data_size)
         yield X[start_index:end_index],y[start_index:end_index],seq_lens[start_index:end_index]
+

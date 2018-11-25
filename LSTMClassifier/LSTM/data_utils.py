@@ -1,10 +1,9 @@
 #!/usr/bin/python
 # -*- coding:UTF-8 -*-
 import numpy as np
-import json
 import jieba
 def init():
-	f = open('/home/jin/data/cail_0518/law.txt', 'r', encoding = 'utf8')
+	f = open('law.txt', 'r', encoding = 'utf8')
 	law = {}
 	lawname = {}
 	line = f.readline()
@@ -15,7 +14,7 @@ def init():
         #law的键是第几条，值是对应的类标记
 		line = f.readline()
 	f.close()
-	f = open('/home/jin/data/cail_0518/accu.txt', 'r', encoding = 'utf8')
+	f = open('accu.txt', 'r', encoding = 'utf8')
 	accu = {}
 	accuname = {}
 	line = f.readline()
@@ -36,51 +35,49 @@ def getClassNum(kind):
     global accu
     if kind == 'law':
         return len(law)
-    if kind == 'accu':
-        return len(accu)
-
-def getName(index, kind):
-    global lawname
-    global accuname
-    if kind == 'law':
-        return lawname[index]
-
-    if kind == 'accu':
-        return accuname[index]
-def gettime(time):
-    # 将刑期用分类模型来做
-    v = int(time['imprisonment'])
-    if time['death_penalty']:
-        return 0
-    if time['life_imprisonment']:
-        return 1
-    elif v > 10 * 12:
-        return 2
-    elif v > 7 * 12:
-        return 3
-    elif v > 5 * 12:
-        return 4
-    elif v > 3 * 12:
-        return 5
-    elif v > 2 * 12:
-        return 6
-    elif v > 1 * 12:
-        return 7
-    else:
-        return 8
-
-def getlabel(d, kind):
-    global law
-    global accu
-    # 做单标签
-    if kind == 'law':
-        # 返回多个类的第一个
-        return law[str(d['meta']['relevant_articles'])]
-    if kind == 'accu':
-        return accu[d['meta']['accusation'][0]]
-
-    if kind == 'time':
-        return gettime(d['meta']['term_of_imprisonment'])
+#
+# def getName(index, kind):
+#     global lawname
+#     global accuname
+#     if kind == 'law':
+#         return lawname[index]
+#
+#     if kind == 'accu':
+#         return accuname[index]
+# def gettime(time):
+#     # 将刑期用分类模型来做
+#     v = int(time['imprisonment'])
+#     if time['death_penalty']:
+#         return 0
+#     if time['life_imprisonment']:
+#         return 1
+#     elif v > 10 * 12:
+#         return 2
+#     elif v > 7 * 12:
+#         return 3
+#     elif v > 5 * 12:
+#         return 4
+#     elif v > 3 * 12:
+#         return 5
+#     elif v > 2 * 12:
+#         return 6
+#     elif v > 1 * 12:
+#         return 7
+#     else:
+#         return 8
+#
+# def getlabel(d, kind):
+#     global law
+#     global accu
+#     # 做单标签
+#     if kind == 'law':
+#         # 返回多个类的第一个
+#         return law[str(d['meta']['relevant_articles'])]
+#     if kind == 'accu':
+#         return accu[d['meta']['accusation'][0]]
+#
+#     if kind == 'time':
+#         return gettime(d['meta']['term_of_imprisonment'])
 _PAD="_PAD"
 _GO="_GO"
 _EOS="EOS"
@@ -91,31 +88,11 @@ GO_ID=1
 EOS_ID=2
 UNK_ID=3
 
-def create_vacabulary(X,max_vocabulay_size=10000):
-    vocab={}
-    for sentence in X:
-        for word in sentence:
-            if word in vocab:
-                vocab[word]+=1
-            else:
-                vocab[word]=1
-    vocab_list=_START_VOCAB+sorted(vocab,key=vocab.get(),reverse=True)
-    vocab_list=vocab_list[:max_vocabulay_size]
-    #这里的vocab_list只会保存max_vocabulay_size个词
-    vocab_dict=dict((x,y) for (y,x) in enumerate(vocab_list))
-    #key is word,value is index即是第几个词
-    rev_vocab_dict={v:k for k,v in vocab_dict.items()}
-    # key is index,value is word
-    return vocab_list,vocab_dict,rev_vocab_dict
-
-
 def cut_text(alltext):
     count = 0
     train_text = []
     for text in alltext:
         count += 1
-        if count % 2000 == 0:
-            print(count)
         train_text.append([word for word in jieba.cut(text) if len(word)>1])
     return train_text
 
@@ -141,4 +118,3 @@ def get_X_with_word_index(allfact,vocab_dict):
     alltext=np.array(alltext)
     seq_lens=np.array(seq_lens)
     return alltext,seq_lens
-
